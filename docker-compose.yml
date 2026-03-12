@@ -3,18 +3,10 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    ports:
-      - 8000:8000
     ulimits: # needed to get around some weird docker issues
       nofile:
         soft: 1024
         hard: 1024
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     environment:
       WISP_SECRET_KEY: ${WISP_SECRET_KEY?ERROR}
