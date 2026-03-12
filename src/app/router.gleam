@@ -8,21 +8,18 @@ import lustre/element
 import lustre/element/html
 import wisp.{type Request, type Response}
 
-fn to_href(domain) {
-  "https://" <> domain
-}
-
-fn link_item(str) {
+fn link_item(s) {
   html.li([], [
-    html.a([attribute.href(str |> to_href)], [
-      html.text(str),
+    html.a([attribute.href(s |> ring.to_href)], [
+      html.text(s.title),
     ]),
+    html.text(" by " <> s.author),
   ])
 }
 
 fn index(ctx: Context) {
   let links =
-    ctx.domains
+    ctx.sites
     |> list.map(link_item)
     |> html.ul([], _)
 
@@ -43,7 +40,7 @@ fn previous(req: Request, ctx: Context) {
     |> result.try(ring.prev(ctx.ring, _))
 
   case ref {
-    Ok(from) -> wisp.redirect(from |> to_href)
+    Ok(from) -> wisp.redirect(from |> ring.to_href)
     _ -> random(ctx)
   }
 }
@@ -54,14 +51,15 @@ fn next(req: Request, ctx: Context) {
     |> result.try(ring.next(ctx.ring, _))
 
   case ref {
-    Ok(from) -> wisp.redirect(from |> to_href)
+    Ok(from) -> wisp.redirect(from |> ring.to_href)
     _ -> random(ctx)
   }
 }
 
 fn random(ctx: Context) {
-  let assert Ok(random) = ctx.domains |> list.shuffle |> list.first
-  wisp.redirect(random |> to_href)
+  let assert Ok(random) = ctx.sites |> list.shuffle |> list.first
+
+  wisp.redirect(random |> ring.to_href)
 }
 
 pub fn handle_request(req: Request, ctx: Context) -> Response {

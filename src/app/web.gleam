@@ -4,7 +4,7 @@ import gleam/result
 import wisp
 
 pub type Context {
-  Context(domains: List(String), ring: ring.Ring)
+  Context(sites: List(ring.Site), ring: ring.Ring)
 }
 
 pub fn middleware(

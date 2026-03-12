@@ -1,19 +1,13 @@
 import app/ring
 import app/router
 import app/web.{Context}
+import config
 import dot_env
 import dot_env/env
 import gleam/erlang/process
 import mist
 import wisp
 import wisp/wisp_mist
-
-pub fn sites() {
-  [
-    "nabeelvalley.co.za",
-    "zahrahmohamed.co.za",
-  ]
-}
 
 pub fn main() {
   wisp.configure_logger()
@@ -25,9 +19,8 @@ pub fn main() {
 
   let assert Ok(wisp_secret_key) = env.get_string("WISP_SECRET_KEY")
 
-  let links = sites()
-  let ring = ring.build_ring(links)
-  let ctx = Context(links, ring)
+  let ring = ring.build_ring(config.sites)
+  let ctx = Context(config.sites, ring)
 
   let handler = router.handle_request(_, ctx)
 
