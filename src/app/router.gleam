@@ -66,7 +66,7 @@ fn previous(req: Request, ctx: Context) {
 
   case ref {
     Ok(from) -> wisp.redirect(from |> ring.to_href)
-    _ -> random(ctx)
+    _ -> random(req, ctx)
   }
 }
 
@@ -77,12 +77,19 @@ fn next(req: Request, ctx: Context) {
 
   case ref {
     Ok(from) -> wisp.redirect(from |> ring.to_href)
-    _ -> random(ctx)
+    _ -> random(req, ctx)
   }
 }
 
-fn random(ctx: Context) {
-  let assert Ok(random) = ctx.sites |> list.shuffle |> list.first
+fn random(req: Request, ctx: Context) {
+  let ref = request.referer_domain(req)
+
+  let sites = case ref {
+    Ok(domain) -> ctx.sites |> list.filter(fn(s) { s.domain != domain })
+    _ -> ctx.sites
+  }
+
+  let assert Ok(random) = sites |> list.shuffle |> list.first
 
   wisp.redirect(random |> ring.to_href)
 }
@@ -94,7 +101,7 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
     [] -> index(ctx)
     ["previous"] -> previous(req, ctx)
     ["next"] -> next(req, ctx)
-    ["random"] -> random(ctx)
+    ["random"] -> random(req, ctx)
     _ -> wisp.not_found()
   }
 }
