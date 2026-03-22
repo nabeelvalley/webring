@@ -8,4 +8,5 @@ pub const sites = [
   Site("ldam.co.za", "Logan's Website", "Logan Dam"),
   Site("abdullahhassen.co.za", "Abdullah's Website", "Abdullah Hassen"),
   Site("blog.kurtlourens.com", "Kurt's Website", "Kurt Lourens"),
+  Site("thomasmason.us", "Thomas' Website", "Thomas Mason"),
 ]
