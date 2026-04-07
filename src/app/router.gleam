@@ -102,6 +102,7 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
     ["previous"] -> previous(req, ctx)
     ["next"] -> next(req, ctx)
     ["random"] -> random(req, ctx)
+    ["healthcheck"] -> wisp.ok()
     _ -> wisp.not_found()
   }
 }
