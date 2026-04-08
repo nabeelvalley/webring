@@ -11,6 +11,7 @@ import wisp/wisp_mist
 
 pub fn main() {
   wisp.configure_logger()
+  wisp.set_logger_level(wisp.DebugLevel)
 
   dot_env.new()
   |> dot_env.set_path(".env")

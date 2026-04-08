@@ -1,6 +1,7 @@
 import app/request
 import app/ring
 import app/web.{type Context, middleware}
+import gleam/http
 import gleam/list
 import gleam/result
 import lustre/attribute
@@ -46,14 +47,14 @@ fn index(ctx: Context) {
     |> list.map(link_item)
     |> html.ul([], _)
 
-  let nav = html.nav([], [links])
-
   main([
     html.h1([], [html.text("Welcome to Nabeel's Webring")]),
-    html.p([], [
-      html.a([attribute.href("/random")], [html.text("Random Link")]),
+    html.nav([], [
+      html.p([], [
+        html.a([attribute.href("/random")], [html.text("Random Link")]),
+      ]),
+      links,
     ]),
-    nav,
   ])
   |> element.to_document_string
   |> wisp.html_response(200)
@@ -97,12 +98,12 @@ fn random(req: Request, ctx: Context) {
 pub fn handle_request(req: Request, ctx: Context) -> Response {
   use _ <- middleware(req, ctx)
 
-  case wisp.path_segments(req) {
-    [] -> index(ctx)
-    ["previous"] -> previous(req, ctx)
-    ["next"] -> next(req, ctx)
-    ["random"] -> random(req, ctx)
-    ["healthcheck"] -> wisp.ok()
-    _ -> wisp.not_found()
+  case req.method, wisp.path_segments(req) {
+    http.Get, [] -> index(ctx)
+    http.Get, ["previous"] -> previous(req, ctx)
+    http.Get, ["next"] -> next(req, ctx)
+    http.Get, ["random"] -> random(req, ctx)
+    http.Get, ["healthcheck"] -> wisp.ok()
+    _, _ -> wisp.not_found()
   }
 }
