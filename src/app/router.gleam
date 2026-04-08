@@ -45,15 +45,16 @@ fn index(ctx: Context) {
   let links =
     ctx.sites
     |> list.map(link_item)
-    |> html.ul([], _)
+
+  let random_link =
+    html.li([], [
+      html.a([attribute.href("/random")], [html.text("Random Link")]),
+    ])
 
   main([
     html.h1([], [html.text("Welcome to Nabeel's Webring")]),
-    html.nav([], [
-      html.p([], [
-        html.a([attribute.href("/random")], [html.text("Random Link")]),
-      ]),
-      links,
+    html.nav([attribute.title("Links")], [
+      html.ul([], [random_link, ..links]),
     ]),
   ])
   |> element.to_document_string
