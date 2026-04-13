@@ -7,6 +7,7 @@ services:
       nofile:
         soft: 1024
         hard: 1024
-    restart: unless-stopped
+    # workaround until i can figure out why the server keeps randomly crashing
+    restart: always
     environment:
       WISP_SECRET_KEY: ${WISP_SECRET_KEY?ERROR}
