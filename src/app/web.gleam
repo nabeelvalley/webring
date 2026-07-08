@@ -1,6 +1,6 @@
 import app/request
 import app/ring
-import gleam/result
+import gleam/option
 import wisp
 
 pub type Context {
@@ -25,6 +25,6 @@ pub fn middleware(
 }
 
 fn log_referer(req: wisp.Request) {
-  let referer = request.referer_domain(req) |> result.unwrap("unknown")
+  let referer = request.referer_domain(req) |> option.unwrap("unknown")
   wisp.log_info("Referer domain: " <> referer)
 }

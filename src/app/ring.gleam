@@ -1,6 +1,6 @@
 import gleam/dict.{type Dict}
 import gleam/list
-import gleam/result
+import gleam/option
 
 pub type Link {
   Link(prev: Site, next: Site)
@@ -33,11 +33,15 @@ pub fn build_ring(links: List(Site)) {
 }
 
 pub fn next(ring: Ring, key: String) {
-  dict.get(ring, key) |> result.map(fn(v: Link) { v.next })
+  dict.get(ring, key)
+  |> option.from_result
+  |> option.map(fn(v: Link) { v.next })
 }
 
 pub fn prev(ring: Ring, key: String) {
-  dict.get(ring, key) |> result.map(fn(v: Link) { v.prev })
+  dict.get(ring, key)
+  |> option.from_result
+  |> option.map(fn(v: Link) { v.prev })
 }
 
 pub fn get_domain(s: Site) {

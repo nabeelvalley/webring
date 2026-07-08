@@ -3,7 +3,7 @@ import app/ring
 import app/web.{type Context, middleware}
 import gleam/http
 import gleam/list
-import gleam/result
+import gleam/option.{Some}
 import lustre/attribute
 import lustre/element
 import lustre/element/html
@@ -46,54 +46,58 @@ fn index(ctx: Context) {
     ctx.sites
     |> list.map(link_item)
 
+  let join_link =
+    html.li([], [
+      html.a(
+        [attribute.href("https://nabeelvalley.co.za/blog/2026/12-03/webring")],
+        [html.text("Join the webring!")],
+      ),
+    ])
+
   let random_link =
     html.li([], [
       html.a([attribute.href("/random")], [html.text("Random Link")]),
     ])
 
+  let links = [join_link] |> list.append(links) |> list.append([random_link])
+
   main([
     html.h1([], [html.text("Welcome to Nabeel's Webring")]),
     html.nav([attribute.title("Links")], [
-      html.ul([], [random_link, ..links]),
+      html.ul([], links),
     ]),
   ])
   |> element.to_document_string
   |> wisp.html_response(200)
 }
 
-fn previous(req: Request, ctx: Context) {
-  let ref =
-    request.referer_domain(req)
-    |> result.try(ring.prev(ctx.ring, _))
+fn redirect(req, ctx: Context, to_site) {
+  request.referer_domain(req)
+  |> option.then(to_site(ctx.ring, _))
+  |> option.map(ring.to_href)
+  |> option.map(wisp.redirect)
+  |> option.unwrap(random(req, ctx))
+}
 
-  case ref {
-    Ok(from) -> wisp.redirect(from |> ring.to_href)
-    _ -> random(req, ctx)
-  }
+fn previous(req: Request, ctx: Context) {
+  redirect(req, ctx, ring.prev)
 }
 
 fn next(req: Request, ctx: Context) {
-  let ref =
-    request.referer_domain(req)
-    |> result.try(ring.next(ctx.ring, _))
-
-  case ref {
-    Ok(from) -> wisp.redirect(from |> ring.to_href)
-    _ -> random(req, ctx)
-  }
+  redirect(req, ctx, ring.next)
 }
 
 fn random(req: Request, ctx: Context) {
   let ref = request.referer_domain(req)
 
   let sites = case ref {
-    Ok(domain) -> ctx.sites |> list.filter(fn(s) { s.domain != domain })
+    Some(domain) -> ctx.sites |> list.filter(fn(s) { s.domain != domain })
     _ -> ctx.sites
   }
 
   let assert Ok(random) = sites |> list.shuffle |> list.first
 
-  wisp.redirect(random |> ring.to_href)
+  random |> ring.to_href |> wisp.redirect
 }
 
 pub fn handle_request(req: Request, ctx: Context) -> Response {

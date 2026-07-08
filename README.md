@@ -13,12 +13,14 @@ That's great! You need to do two things:
   <a href="https://webring.nabeelvalley.co.za"><em>Webring</em></a>
 
   <ul class="links">
-    <li><a href="https://webring.nabeelvalley.co.za/previous">Previous</a></li>
-    <li><a href="https://webring.nabeelvalley.co.za/random">Random</a></li>
-    <li><a href="https://webring.nabeelvalley.co.za/next">Next</a></li>
+    <li><a href="https://webring.nabeelvalley.co.za/previous?referer=your.domain.com">Previous</a></li>
+    <li><a href="https://webring.nabeelvalley.co.za/random?referer=your.domain.com">Random</a></li>
+    <li><a href="https://webring.nabeelvalley.co.za/next?referer=your.domain.com">Next</a></li>
   </ul>
 </section>
 ```
+
+> Make sure to replace the `your.domain.com` with your actual domain - as listed in `src/config.gleam` of course
 
 2. Add your site to the list at `src/config.gleam` and you'll automatically be a part of the ring
 
